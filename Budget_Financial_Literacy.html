@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📱 Financial Literacy App - Login Enabled</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f8ff;
+      margin: 0;
+      padding: 0;
+    }
+    header, footer {
+      background: #0074D9;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+    main {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #0074D9;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .output {
+      margin-top: 10px;
+      font-weight: bold;
+      color: green;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📊 Financial Literacy App</h1>
+  </header>
+
+  <main>
+
+    <!-- Login/Signup -->
+    <section id="authSection">
+      <h2>🔐 Login or Sign Up</h2>
+      <div id="signupForm">
+        <h3>Create Account</h3>
+        <input type="text" id="signupName" placeholder="Full Name">
+        <input type="email" id="signupEmail" placeholder="Email">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button onclick="signUp()">Sign Up</button>
+      </div>
+
+      <hr>
+
+      <div id="loginForm">
+        <h3>Login</h3>
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="logIn()">Login</button>
+        <p class="output" id="authMessage"></p>
+      </div>
+    </section>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+
+      <!-- Budget Tracker -->
+      <section>
+        <h2>💰 Budget Tracker</h2>
+        <input type="number" id="income" placeholder="Enter Monthly Income">
+        <input type="number" id="expenses" placeholder="Enter Monthly Expenses">
+        <button onclick="calculateBudget()">Track Budget</button>
+        <p class="output" id="budgetResult"></p>
+      </section>
+
+      <!-- Savings Planner -->
+      <section>
+        <h2>🏦 Savings Planner</h2>
+        <input type="number" id="savingGoal" placeholder="Savings Goal ₹">
+        <input type="number" id="monthlySave" placeholder="Monthly Saving ₹">
+        <button onclick="planSavings()">Calculate</button>
+        <p class="output" id="savingResult"></p>
+      </section>
+
+      <!-- Investment Tips -->
+      <section>
+        <h2>📘 Investment Learning</h2>
+        <button onclick="loadInvestmentTips()">Show Tips</button>
+        <ul id="tipsList"></ul>
+      </section>
+
+      <!-- Notifications -->
+      <section>
+        <h2>🔔 Notifications</h2>
+        <button onclick="generateNotification()">Get Reminder</button>
+        <p class="output" id="notifyResult"></p>
+      </section>
+
+      <!-- Profile -->
+      <section>
+        <h2>👤 User Profile</h2>
+        <input type="text" id="userName" placeholder="Name">
+        <input type="number" id="userAge" placeholder="Age">
+        <input type="number" id="currentSaving" placeholder="Current Saving ₹">
+        <button onclick="showUserProfile()">Show Profile</button>
+        <p class="output" id="profileOutput"></p>
+      </section>
+
+      <button onclick="logOut()">🚪 Logout</button>
+
+    </div>
+
+  </main>
+
+  <footer>
+    Made by Sree Sai Sandeep
+  </footer>
+
+  <script>
+    // Sign Up
+    function signUp() {
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      if (!name || !email || !password) {
+        alert("Please fill all sign-up fields.");
+        return;
+      }
+
+      const user = {
+        name: name,
+        email: email,
+        password: password
+      }; 
+
+      localStorage.setItem('user', JSON.stringify(user));
+      alert("Sign up successful! You can now log in.");
+    }
+
+    // Log In
+    function logIn() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+
+      if (!storedUser || storedUser.email !== email || storedUser.password !== password) {
+        document.getElementById('authMessage').innerText = "❌ Login failed. Check your credentials.";
+        return;
+      }
+
+      document.getElementById('authSection').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+      document.getElementById('authMessage').innerText = "";
+    }
+
+    // Logout
+    function logOut() {
+      document.getElementById('authSection').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+    }
+
+    // Budget Tracker
+    function calculateBudget() {
+      let income = parseFloat(document.getElementById('income').value);
+      let expenses = parseFloat(document.getElementById('expenses').value);
+      if (isNaN(income) || isNaN(expenses)) {
+        document.getElementById('budgetResult').innerText = "Enter valid income and expense.";
+        return;
+      }
+      let balance = income - expenses;
+      document.getElementById('budgetResult').innerText =
+        balance >= 0 ? `✅ You saved ₹${balance}` : `⚠️ Overspending ₹${-balance}`;
+    }
+
+    // Savings Planner
+    function planSavings() {
+      let goal = parseFloat(document.getElementById('savingGoal').value);
+      let monthly = parseFloat(document.getElementById('monthlySave').value);
+      if (isNaN(goal) || isNaN(monthly) || monthly <= 0) {
+        document.getElementById('savingResult').innerText = "Enter valid goal and monthly saving.";
+        return;
+      }
+      let months = Math.ceil(goal / monthly);
+      document.getElementById('savingResult').innerText = `⏳ You need ${months} months to reach your goal.`;
+    }
+
+    // Investment Tips
+    function loadInvestmentTips() {
+      const tips = [
+        "Start with small safe investments.",
+        "Understand FDs, SIPs, and stocks.",
+        "Never invest in unknown schemes.",
+        "Track your financial growth monthly.",
+        "Always research before investing."
+      ];
+      let list = document.getElementById('tipsList');
+      list.innerHTML = "";
+      tips.forEach(tip => {
+        let li = document.createElement('li');
+        li.innerText = tip;
+        list.appendChild(li);
+      });
+    }
+
+    // Notifications
+    function generateNotification() {
+      const messages = [
+        "💡 Update your budget today!",
+        "📈 Check your savings progress!",
+        "📚 Learn 1 investment tip today!",
+        "🎯 Are you on track to your goal?"
+      ];
+      let msg = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById('notifyResult').innerText = msg;
+    }
+
+    // User Profile
+    function showUserProfile() {
+      let name = document.getElementById('userName').value;
+      let age = parseInt(document.getElementById('userAge').value);
+      let saving = parseFloat(document.getElementById('currentSaving').value);
+
+      if (!name || isNaN(age) || isNaN(saving)) {
+        document.getElementById('profileOutput').innerText = "Fill in all details.";
+        return;
+      }
+
+      document.getElementById('profileOutput').innerText =
+        `👤 Name: ${name}, Age: ${age}, Current Saving: ₹${saving}`;
+    }
+  </script>
+
+</body>
+</html>
